@@ -1,0 +1,12 @@
+# legacy single-page file -> home
+/subhadra-botanical.html   /   301!
+/index.html                /   301!
+# tolerate .html and trailing-slash variants
+/products.html             /products/       301!
+/bilona-ghee.html          /bilona-ghee/    301!
+/about.html                /about/          301!
+/contact.html              /contact/        301!
+/products                  /products/       301
+/bilona-ghee               /bilona-ghee/    301
+/about                     /about/          301
+/contact                   /contact/        301
