@@ -192,3 +192,55 @@ document.documentElement.classList.add('js'); document.body.classList.add('js');
     whenReady(function(){ play();
       if('IntersectionObserver' in window){ var hero=els[0].closest('section'), seen=true;
         new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && !seen){ seen=true; play(); } else if(!e.isIntersecting){ seen=false; } }); },{threshold:.35}).observe(hero); } }); })();
+
+/* ---- gallery lightbox ---- */
+(function(){
+  var figs = Array.prototype.slice.call(document.querySelectorAll('.galmasonry figure'));
+  if (!figs.length) return;
+  var box = document.getElementById('lbox');
+  if (!box) return;
+  var img = box.querySelector('img'),
+      cap = box.querySelector('.lcap'),
+      cnt = box.querySelector('.lcount'),
+      i = 0, lastFocus = null;
+
+  function show(n){
+    i = (n + figs.length) % figs.length;
+    var f = figs[i], t = f.querySelector('img');
+    img.src = f.getAttribute('data-full');
+    img.alt = t ? t.alt : '';
+    cap.textContent = f.querySelector('figcaption').textContent;
+    cnt.textContent = (i + 1) + ' of ' + figs.length;
+  }
+  function open(n){
+    lastFocus = document.activeElement;
+    show(n);
+    box.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    box.querySelector('.lclose').focus();
+  }
+  function close(){
+    box.classList.remove('on');
+    img.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+  figs.forEach(function(f, n){
+    f.setAttribute('tabindex', '0');
+    f.setAttribute('role', 'button');
+    f.addEventListener('click', function(){ open(n); });
+    f.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(n); }
+    });
+  });
+  box.querySelector('.lclose').addEventListener('click', close);
+  box.querySelector('.lprev').addEventListener('click', function(){ show(i - 1); });
+  box.querySelector('.lnext').addEventListener('click', function(){ show(i + 1); });
+  box.addEventListener('click', function(e){ if (e.target === box) close(); });
+  document.addEventListener('keydown', function(e){
+    if (!box.classList.contains('on')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(i - 1);
+    else if (e.key === 'ArrowRight') show(i + 1);
+  });
+})();
